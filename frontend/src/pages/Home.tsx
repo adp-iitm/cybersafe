@@ -13,21 +13,21 @@ const featureCards = [
     title: 'URL Phishing Check',
     description: 'Instantly verify if a URL is safe or a phishing attempt.',
     link: '/url-check',
-    color: 'text-primary',
+    color: 'text-blue-500',
   },
   {
     icon: Mail,
     title: 'Email Scam Detector',
     description: 'Analyze suspicious emails for common scam indicators.',
     link: '/email-check',
-    color: 'text-secondary',
+    color: 'text-green-500',
   },
   {
     icon: DollarSign,
     title: 'Transaction Fraud Analysis',
     description: 'Assess the risk of financial transactions in real-time.',
     link: '/transaction-check',
-    color: 'text-accent',
+    color: 'text-yellow-500',
   },
   {
     icon: BookOpen,
@@ -95,12 +95,12 @@ const Home: React.FC = () => {
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
             className="hero-icon inline-block p-3 rounded-full bg-primary-light bg-opacity-10 mb-4"
           >
-            <ShieldCheck size={48} className="text-primary" />
+            <ShieldCheck size={48} className="text-blue-500" />
           </motion.div>
-          <h1 className="hero-title text-5xl md:text-6xl font-display font-extrabold text-text leading-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
+          <h1 className="hero-title text-5xl md:text-6xl font-bold text-gray-800 leading-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
             Your Shield Against Cyber Threats
           </h1>
-          <p className="hero-subtitle text-lg md:text-xl text-text-light mb-8 max-w-2xl mx-auto">
+          <p className="hero-subtitle text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Leverage AI-powered fraud detection for URLs, emails, and transactions. Stay safe, stay informed.
           </p>
           <motion.div
@@ -131,7 +131,7 @@ const Home: React.FC = () => {
         >
           <motion.h2
             variants={itemVariants}
-            className="text-4xl font-display font-bold text-center text-text mb-12"
+            className="text-4xl font-display font-bold text-center text-gray-800 mb-12"
           >
             Key Features
           </motion.h2>
@@ -152,8 +152,8 @@ const Home: React.FC = () => {
                     <div className={`p-4 rounded-full bg-opacity-10 ${feature.color.replace('text-', 'bg-')} mb-4 card-icon`}>
                       <feature.icon size={40} className={feature.color} />
                     </div>
-                    <h3 className="text-xl font-semibold text-text mb-2">{feature.title}</h3>
-                    <p className="text-text-light text-sm flex-grow">{feature.description}</p>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">{feature.title}</h3>
+                    <p className="text-gray-800-light text-sm flex-grow">{feature.description}</p>
                     <Button variant="ghost" className="mt-4">
                       Explore
                     </Button>
@@ -171,8 +171,8 @@ const Home: React.FC = () => {
           transition={{ delay: 0.8, duration: 0.8 }}
           className="text-center max-w-3xl"
         >
-          <h2 className="text-4xl font-display font-bold text-text mb-4">Ready to Protect Yourself?</h2>
-          <p className="text-lg text-text-light mb-8">
+          <h2 className="text-4xl font-display font-bold text-gray-800 mb-4">Ready to Protect Yourself?</h2>
+          <p className="text-lg text-gray-800-light mb-8">
             Join thousands of users who trust CyberSafe AI to keep their digital lives secure.
           </p>
           <motion.div

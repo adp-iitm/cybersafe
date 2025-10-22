@@ -15,7 +15,7 @@ const URLCheck: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
+    if (!url.trim() || loading) return; // Prevent double submission
     
     setLoading(true);
     setPredictionResult(null);
@@ -31,6 +31,8 @@ const URLCheck: React.FC = () => {
       setError('Failed to connect to the API. Please try again.');
     } finally {
       setLoading(false);
+      // Clear the form after processing (success or error)
+      setUrl('');
     }
   };
 
@@ -120,14 +122,16 @@ const URLCheck: React.FC = () => {
             </motion.div>
           )}
 
-          {predictionResult && (
-            <AnimatedResultDisplay
-              result={getResultType(predictionResult.prediction)}
-              confidence={predictionResult.confidence * 100}
-              details={predictionResult.details}
-              recommendations={predictionResult.recommendations}
-            />
-          )}
+                {predictionResult && (
+                  <AnimatedResultDisplay
+                    result={getResultType(predictionResult.prediction)}
+                    confidence={predictionResult.confidence * 100}
+                    details={predictionResult.details}
+                    recommendations={predictionResult.recommendations}
+                    risk_score={predictionResult.risk_score}
+                    suspicious_factors={predictionResult.suspicious_factors}
+                  />
+                )}
         </motion.div>
       </Card>
 

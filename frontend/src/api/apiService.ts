@@ -12,6 +12,8 @@ export interface PredictionResponse {
   details: string;
   recommendations: string[];
   timestamp: string;
+  risk_score?: number;
+  suspicious_factors?: string[];
 }
 
 export interface BatchPredictionResponse {

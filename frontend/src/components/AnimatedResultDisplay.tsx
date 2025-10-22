@@ -8,13 +8,17 @@ interface AnimatedResultDisplayProps {
   confidence: number;
   details: string;
   recommendations?: string[];
+  risk_score?: number;
+  suspicious_factors?: string[];
 }
 
 const AnimatedResultDisplay: React.FC<AnimatedResultDisplayProps> = ({
   result,
   confidence,
   details,
-  recommendations = []
+  recommendations = [],
+  risk_score,
+  suspicious_factors = []
 }) => {
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -73,14 +77,14 @@ const AnimatedResultDisplay: React.FC<AnimatedResultDisplayProps> = ({
       ref={resultRef}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.8, ease: 'back.out(1.7)' }}
+      transition={{ duration: 0.8, ease: 'easeOut' }}
       className={`result-display p-6 rounded-xl border-2 ${config.bgColor} ${config.borderColor} shadow-lg`}
     >
       {/* Header with animated icon */}
       <motion.div
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
-        transition={{ delay: 0.2, duration: 0.8, ease: 'back.out(1.7)' }}
+        transition={{ delay: 0.2, duration: 0.8, ease: 'easeOut' }}
         className="flex items-center justify-center mb-4"
       >
         <div className={`p-4 rounded-full ${config.bgColor} shadow-md`}>
@@ -122,6 +126,32 @@ const AnimatedResultDisplay: React.FC<AnimatedResultDisplayProps> = ({
         </div>
       </motion.div>
 
+      {/* Risk Score */}
+      {risk_score !== undefined && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+          className="mb-4"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-medium text-gray-600">Risk Score</span>
+            <span className={`text-lg font-bold ${config.color}`}>{risk_score}/100</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${risk_score}%` }}
+              transition={{ delay: 0.9, duration: 1.5, ease: 'easeOut' }}
+              className={`h-full rounded-full ${
+                risk_score >= 70 ? 'bg-red-500' : 
+                risk_score >= 40 ? 'bg-yellow-500' : 'bg-green-500'
+              }`}
+            />
+          </div>
+        </motion.div>
+      )}
+
       {/* Details */}
       <motion.p
         initial={{ opacity: 0, y: 20 }}
@@ -131,6 +161,37 @@ const AnimatedResultDisplay: React.FC<AnimatedResultDisplayProps> = ({
       >
         {details}
       </motion.p>
+
+      {/* Suspicious Factors */}
+      {suspicious_factors.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="mt-4"
+        >
+          <h4 className="text-sm font-semibold text-gray-600 mb-2 flex items-center">
+            <AlertTriangle size={16} className="mr-2" />
+            Suspicious Factors Detected
+          </h4>
+          <div className="max-h-32 overflow-y-auto">
+            <ul className="space-y-1">
+              {suspicious_factors.map((factor, index) => (
+                <motion.li
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.1 + index * 0.1, duration: 0.4 }}
+                  className="text-sm text-gray-600 flex items-start"
+                >
+                  <span className="text-red-500 mr-2">⚠️</span>
+                  {factor}
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
+      )}
 
       {/* Recommendations */}
       {recommendations.length > 0 && (

@@ -37,6 +37,9 @@ const TransactionCheck: React.FC = () => {
       const response = await apiService.checkTransaction(transaction_data);
       console.log('API Response:', response);
       setPredictionResult(response);
+      // Clear the form after successful submission
+      setAmount('');
+      setCountry('');
     } catch (err) {
       console.error('API Error:', err);
       setError('Failed to connect to the API. Please try again.');

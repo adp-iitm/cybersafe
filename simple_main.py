@@ -95,6 +95,8 @@ class PredictionResponse(BaseModel):
     details: str
     recommendations: List[str]
     timestamp: datetime
+    risk_score: Optional[int] = None
+    suspicious_factors: Optional[List[str]] = None
     
 class BatchPredictionResponse(BaseModel):
     results: List[PredictionResponse]
@@ -124,39 +126,305 @@ async def health_check():
         version="2.0.0"
     )
 
-# Mock prediction functions (replace with actual ML models)
+# Enhanced URL analysis with comprehensive phishing detection
+import re
+import urllib.parse
+from urllib.parse import urlparse, parse_qs
+import socket
+import ssl
+# import whois  # Not needed for basic analysis
+# import requests  # Not needed for basic analysis
+from datetime import datetime, timedelta
+
 def analyze_url(url: str) -> Dict:
-    """Mock URL analysis"""
-    # Simulate analysis based on URL characteristics
-    is_suspicious = any(keyword in url.lower() for keyword in ['phishing', 'scam', 'fake', 'suspicious'])
-    confidence = random.uniform(0.7, 0.95)
-    
-    if is_suspicious:
+    """Comprehensive URL analysis for phishing detection"""
+    try:
+        # Parse the URL
+        parsed_url = urlparse(url)
+        domain = parsed_url.netloc.lower()
+        path = parsed_url.path.lower()
+        query = parsed_url.query.lower()
+        
+        # Initialize risk score
+        risk_score = 0
+        suspicious_factors = []
+        confidence = 0.85
+        
+        # 1. Domain Analysis
+        domain_checks = analyze_domain(domain)
+        risk_score += domain_checks['risk_score']
+        suspicious_factors.extend(domain_checks['factors'])
+        
+        # 2. URL Structure Analysis
+        structure_checks = analyze_url_structure(url, parsed_url)
+        risk_score += structure_checks['risk_score']
+        suspicious_factors.extend(structure_checks['factors'])
+        
+        # 3. Content Analysis
+        content_checks = analyze_url_content(url, domain, path, query)
+        risk_score += content_checks['risk_score']
+        suspicious_factors.extend(content_checks['factors'])
+        
+        # 4. Security Analysis
+        security_checks = analyze_security_features(url, parsed_url)
+        risk_score += security_checks['risk_score']
+        suspicious_factors.extend(security_checks['factors'])
+        
+        # 5. Reputation Analysis
+        reputation_checks = analyze_reputation(domain)
+        risk_score += reputation_checks['risk_score']
+        suspicious_factors.extend(reputation_checks['factors'])
+        
+        # Determine final prediction with more aggressive thresholds
+        if risk_score >= 50:  # Lowered from 70
+            prediction = "fraudulent"
+            risk_level = "high"
+            confidence = min(0.95, 0.8 + (risk_score / 100) * 0.15)
+        elif risk_score >= 25:  # Lowered from 40
+            prediction = "suspicious"
+            risk_level = "medium"
+            confidence = 0.75 + (risk_score / 100) * 0.2
+        else:
+            prediction = "safe"
+            risk_level = "low"
+            confidence = 0.85 + (risk_score / 100) * 0.15
+        
+        # Generate detailed response
+        details = generate_detailed_analysis(url, risk_score, suspicious_factors)
+        recommendations = generate_recommendations(prediction, risk_level, suspicious_factors)
+        
         return {
-            "prediction": "fraudulent",
+            "prediction": prediction,
             "confidence": confidence,
-            "risk_level": "high" if confidence > 0.8 else "medium",
-            "details": f"URL '{url}' shows characteristics of a phishing site",
+            "risk_level": risk_level,
+            "details": details,
+            "recommendations": recommendations,
+            "risk_score": risk_score,
+            "suspicious_factors": suspicious_factors,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error analyzing URL {url}: {str(e)}")
+        return {
+            "prediction": "suspicious",
+            "confidence": 0.6,
+            "risk_level": "medium",
+            "details": f"Unable to fully analyze URL due to technical issues: {str(e)}",
             "recommendations": [
-                "Do not click on this link",
+                "Exercise caution with this URL",
                 "Verify the website through official channels",
-                "Report this as a phishing attempt"
+                "Consider not visiting this URL"
             ],
             "timestamp": datetime.now().isoformat()
         }
+
+def analyze_domain(domain: str) -> Dict:
+    """Analyze domain characteristics for phishing indicators"""
+    risk_score = 0
+    factors = []
+    
+    # Remove www. prefix for analysis
+    clean_domain = domain.replace('www.', '')
+    
+    # 1. Suspicious keywords in domain - More aggressive detection
+    suspicious_keywords = [
+        'secure', 'verify', 'account', 'login', 'bank', 'paypal', 'amazon', 
+        'google', 'facebook', 'microsoft', 'apple', 'netflix', 'ebay',
+        'phishing', 'scam', 'fake', 'suspicious', 'malicious', 'security',
+        'verification', 'confirm', 'update', 'urgent'
+    ]
+    
+    for keyword in suspicious_keywords:
+        if keyword in clean_domain:
+            risk_score += 20  # Increased from 15
+            factors.append(f"Suspicious keyword '{keyword}' found in domain")
+    
+    # 2. Typosquatting detection (common misspellings) - Enhanced
+    typosquatting_patterns = [
+        'goggle', 'googel', 'gogle', 'g0ogle', 'g00gle', 'facebok', 'faceboook', 
+        'paypall', 'paypal1', 'amazom', 'amazon1', 'micrsoft', 'applle', 'netflx',
+        'chaTgpt', 'chatgpt1', 'chatgpt-security', 'google-verify', 'paypal-security',
+        'amazon-verify', 'facebook-login', 'microsoft-update'
+    ]
+    
+    for pattern in typosquatting_patterns:
+        if pattern in clean_domain:
+            risk_score += 30  # Increased from 25
+            factors.append(f"Potential typosquatting detected: '{pattern}'")
+    
+    # 3. Domain length and complexity
+    if len(clean_domain) > 30:
+        risk_score += 10
+        factors.append("Unusually long domain name")
+    
+    # 4. Multiple subdomains
+    subdomain_count = len(clean_domain.split('.'))
+    if subdomain_count > 3:
+        risk_score += 15
+        factors.append(f"Multiple subdomains detected ({subdomain_count})")
+    
+    # 5. Suspicious TLD
+    suspicious_tlds = ['.tk', '.ml', '.ga', '.cf', '.click', '.download']
+    for tld in suspicious_tlds:
+        if clean_domain.endswith(tld):
+            risk_score += 20
+            factors.append(f"Suspicious top-level domain: {tld}")
+    
+    return {"risk_score": risk_score, "factors": factors}
+
+def analyze_url_structure(url: str, parsed_url) -> Dict:
+    """Analyze URL structure for phishing indicators"""
+    risk_score = 0
+    factors = []
+    
+    # 1. URL length
+    if len(url) > 100:
+        risk_score += 10
+        factors.append("Unusually long URL")
+    
+    # 2. Multiple redirects or parameters
+    if 'redirect' in url.lower() or 'url=' in url.lower():
+        risk_score += 15
+        factors.append("URL contains redirect parameters")
+    
+    # 3. IP address instead of domain
+    ip_pattern = r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b'
+    if re.search(ip_pattern, parsed_url.netloc):
+        risk_score += 25
+        factors.append("URL uses IP address instead of domain name")
+    
+    # 4. Suspicious path patterns
+    suspicious_paths = ['login', 'verify', 'secure', 'account', 'confirm']
+    for path in suspicious_paths:
+        if path in parsed_url.path.lower():
+            risk_score += 10
+            factors.append(f"Suspicious path pattern: '{path}'")
+    
+    # 5. Excessive query parameters
+    query_params = parse_qs(parsed_url.query)
+    if len(query_params) > 5:
+        risk_score += 10
+        factors.append("Excessive query parameters")
+    
+    return {"risk_score": risk_score, "factors": factors}
+
+def analyze_url_content(url: str, domain: str, path: str, query: str) -> Dict:
+    """Analyze URL content for phishing indicators"""
+    risk_score = 0
+    factors = []
+    
+    # 1. Suspicious content patterns
+    suspicious_patterns = [
+        'phishing', 'scam', 'fake', 'suspicious', 'malicious',
+        'urgent', 'verify', 'confirm', 'secure', 'login',
+        'account', 'password', 'credit', 'card', 'bank'
+    ]
+    
+    url_content = f"{domain} {path} {query}".lower()
+    for pattern in suspicious_patterns:
+        if pattern in url_content:
+            risk_score += 8
+            factors.append(f"Suspicious content pattern: '{pattern}'")
+    
+    # 2. Brand impersonation - Enhanced detection
+    popular_brands = [
+        'paypal', 'amazon', 'google', 'facebook', 'microsoft', 'apple',
+        'netflix', 'ebay', 'linkedin', 'twitter', 'instagram', 'chatgpt'
+    ]
+    
+    for brand in popular_brands:
+        if brand in url_content:
+            # Check if it's in the domain but with suspicious additions
+            if brand in domain and ('security' in domain or 'verify' in domain or 'login' in domain):
+                risk_score += 35  # Increased penalty for brand + suspicious words
+                factors.append(f"Brand impersonation with suspicious words: '{brand}'")
+            elif brand in url_content and brand not in domain:
+                risk_score += 25  # Increased from 20
+                factors.append(f"Potential brand impersonation: '{brand}'")
+    
+    return {"risk_score": risk_score, "factors": factors}
+
+def analyze_security_features(url: str, parsed_url) -> Dict:
+    """Analyze security features of the URL"""
+    risk_score = 0
+    factors = []
+    
+    # 1. HTTPS check
+    if parsed_url.scheme != 'https':
+        risk_score += 20
+        factors.append("URL does not use HTTPS encryption")
     else:
-        return {
-            "prediction": "safe",
-            "confidence": confidence,
-            "risk_level": "low",
-            "details": f"URL '{url}' appears to be legitimate",
-            "recommendations": [
-                "This URL appears safe to visit",
-                "Always verify the website's authenticity",
-                "Use HTTPS when entering sensitive information"
-            ],
-            "timestamp": datetime.now().isoformat()
-        }
+        factors.append("URL uses HTTPS encryption (good)")
+    
+    # 2. Port check
+    if parsed_url.port and parsed_url.port not in [80, 443, 8080]:
+        risk_score += 15
+        factors.append(f"Unusual port number: {parsed_url.port}")
+    
+    return {"risk_score": risk_score, "factors": factors}
+
+def analyze_reputation(domain: str) -> Dict:
+    """Analyze domain reputation"""
+    risk_score = 0
+    factors = []
+    
+    # 1. New domain (simulated - in real implementation, check WHOIS)
+    # For demo purposes, we'll simulate some checks
+    
+    # 2. Known malicious domains (simulated blacklist)
+    malicious_domains = [
+        'malicious-site.com', 'phishing-scam.net', 'fake-bank.org',
+        'suspicious-link.tk', 'dangerous-site.ml'
+    ]
+    
+    if domain in malicious_domains:
+        risk_score += 50
+        factors.append("Domain is in known malicious domains list")
+    
+    # 3. Suspicious domain patterns
+    if domain.count('.') > 2:
+        risk_score += 10
+        factors.append("Complex domain structure")
+    
+    return {"risk_score": risk_score, "factors": factors}
+
+def generate_detailed_analysis(url: str, risk_score: int, suspicious_factors: list) -> str:
+    """Generate detailed analysis text"""
+    if risk_score >= 70:
+        return f"URL '{url}' shows strong indicators of being a phishing or malicious site. Risk score: {risk_score}/100. Detected {len(suspicious_factors)} suspicious factors."
+    elif risk_score >= 40:
+        return f"URL '{url}' shows some suspicious characteristics that warrant caution. Risk score: {risk_score}/100. Detected {len(suspicious_factors)} suspicious factors."
+    else:
+        return f"URL '{url}' appears to be legitimate with minimal risk indicators. Risk score: {risk_score}/100. Only {len(suspicious_factors)} minor concerns detected."
+
+def generate_recommendations(prediction: str, risk_level: str, suspicious_factors: list) -> list:
+    """Generate appropriate recommendations based on analysis"""
+    recommendations = []
+    
+    if prediction == "fraudulent":
+        recommendations.extend([
+            "🚨 DO NOT visit this URL - it appears to be malicious",
+            "Report this URL to your security team or authorities",
+            "If you already visited, run a full antivirus scan",
+            "Check your accounts for any unauthorized activity"
+        ])
+    elif prediction == "suspicious":
+        recommendations.extend([
+            "⚠️ Exercise extreme caution with this URL",
+            "Verify the website through official channels",
+            "Consider not visiting this URL",
+            "If you must visit, use a virtual machine or sandbox"
+        ])
+    else:
+        recommendations.extend([
+            "✅ This URL appears safe to visit",
+            "Always verify website authenticity before entering sensitive information",
+            "Keep your browser and security software updated",
+            "Use HTTPS when entering personal or financial information"
+        ])
+    
+    return recommendations
 
 def analyze_email(email_text: str) -> Dict:
     """Mock email analysis"""
@@ -243,7 +511,9 @@ async def api_url_check(item: URLItem, token: str = Depends(verify_token)):
             risk_level=result["risk_level"],
             details=result["details"],
             recommendations=result["recommendations"],
-            timestamp=datetime.now()
+            timestamp=datetime.now(),
+            risk_score=result.get("risk_score"),
+            suspicious_factors=result.get("suspicious_factors")
         )
     except Exception as e:
         logger.error(f"Error analyzing URL: {str(e)}")
@@ -303,7 +573,9 @@ async def api_batch_url_check(batch: URLBatch, token: str = Depends(verify_token
                 risk_level=result["risk_level"],
                 details=result["details"],
                 recommendations=result["recommendations"],
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
+                risk_score=result.get("risk_score"),
+                suspicious_factors=result.get("suspicious_factors")
             ) for result in results
         ]
         
@@ -332,7 +604,9 @@ async def api_batch_email_check(batch: EmailBatch, token: str = Depends(verify_t
                 risk_level=result["risk_level"],
                 details=result["details"],
                 recommendations=result["recommendations"],
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
+                risk_score=result.get("risk_score"),
+                suspicious_factors=result.get("suspicious_factors")
             ) for result in results
         ]
         
@@ -361,7 +635,9 @@ async def api_batch_transaction_check(batch: TransactionBatch, token: str = Depe
                 risk_level=result["risk_level"],
                 details=result["details"],
                 recommendations=result["recommendations"],
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
+                risk_score=result.get("risk_score"),
+                suspicious_factors=result.get("suspicious_factors")
             ) for result in results
         ]
         

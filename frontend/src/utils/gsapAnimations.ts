@@ -10,54 +10,86 @@ export class GSAPAnimations {
   static animateHeroSection() {
     const tl = gsap.timeline();
     
-    // Animate background waves
-    tl.fromTo('.hero-bg-wave', 
-      { scale: 0, opacity: 0 },
-      { scale: 1, opacity: 0.1, duration: 2, ease: 'power2.out' }
-    )
-    .fromTo('.hero-bg-wave-2', 
-      { scale: 0, opacity: 0 },
-      { scale: 1, opacity: 0.05, duration: 2.5, ease: 'power2.out' }, '-=1.5'
-    );
+    // Check if elements exist before animating
+    const heroBgWave = document.querySelector('.hero-bg-wave');
+    const heroBgWave2 = document.querySelector('.hero-bg-wave-2');
+    const heroTitle = document.querySelector('.hero-title');
+    const heroSubtitle = document.querySelector('.hero-subtitle');
+    const heroButtons = document.querySelector('.hero-buttons');
+    const heroIcon = document.querySelector('.hero-icon');
 
-    // Animate text with split reveal
-    const heroTitle = new SplitType('.hero-title', { types: 'chars' });
-    tl.fromTo(heroTitle.chars, 
-      { y: 100, opacity: 0, rotationX: 90 },
-      { y: 0, opacity: 1, rotationX: 0, duration: 1, stagger: 0.02, ease: 'back.out(1.7)' }
-    );
+    // Animate background waves if they exist
+    if (heroBgWave) {
+      tl.fromTo(heroBgWave, 
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 0.1, duration: 2, ease: 'power2.out' }
+      );
+    }
+    
+    if (heroBgWave2) {
+      tl.fromTo(heroBgWave2, 
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 0.05, duration: 2.5, ease: 'power2.out' }, '-=1.5'
+      );
+    }
 
-    // Animate subtitle
-    tl.fromTo('.hero-subtitle', 
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }, '-=0.5'
-    );
+    // Animate text with split reveal if it exists
+    if (heroTitle) {
+      try {
+        const splitTitle = new SplitType(heroTitle, { types: 'chars' });
+        tl.fromTo(splitTitle.chars, 
+          { y: 100, opacity: 0, rotationX: 90 },
+          { y: 0, opacity: 1, rotationX: 0, duration: 1, stagger: 0.02, ease: 'back.out(1.7)' }
+        );
+      } catch (error) {
+        // Fallback if SplitType fails
+        tl.fromTo(heroTitle, 
+          { y: 50, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }
+        );
+      }
+    }
 
-    // Animate buttons
-    tl.fromTo('.hero-buttons', 
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' }, '-=0.3'
-    );
+    // Animate subtitle if it exists
+    if (heroSubtitle) {
+      tl.fromTo(heroSubtitle, 
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'power2.out' }, '-=0.5'
+      );
+    }
 
-    // Animate icon with glow effect
-    tl.fromTo('.hero-icon', 
-      { scale: 0, rotation: 180 },
-      { scale: 1, rotation: 0, duration: 1.2, ease: 'back.out(1.7)' }, '-=0.8'
-    );
+    // Animate buttons if they exist
+    if (heroButtons) {
+      tl.fromTo(heroButtons, 
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out' }, '-=0.3'
+      );
+    }
 
-    // Continuous glow animation
-    gsap.to('.hero-icon', {
-      boxShadow: '0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.3)',
-      duration: 2,
-      repeat: -1,
-      yoyo: true,
-      ease: 'power2.inOut'
-    });
+    // Animate icon if it exists
+    if (heroIcon) {
+      tl.fromTo(heroIcon, 
+        { scale: 0, rotation: 180 },
+        { scale: 1, rotation: 0, duration: 1.2, ease: 'back.out(1.7)' }, '-=0.8'
+      );
+
+      // Continuous glow animation
+      gsap.to(heroIcon, {
+        boxShadow: '0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.3)',
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: 'power2.inOut'
+      });
+    }
   }
 
   // Feature cards animations
   static animateFeatureCards() {
-    gsap.utils.toArray('.feature-card').forEach((card: any, index) => {
+    const featureCards = gsap.utils.toArray('.feature-card');
+    if (featureCards.length === 0) return;
+
+    featureCards.forEach((card: any, index) => {
       gsap.fromTo(card, 
         { y: 100, opacity: 0, scale: 0.8 },
         { 
@@ -79,20 +111,26 @@ export class GSAPAnimations {
       // Hover animations
       card.addEventListener('mouseenter', () => {
         gsap.to(card, { scale: 1.05, duration: 0.3, ease: 'power2.out' });
-        gsap.to(card.querySelector('.card-icon'), { 
-          rotation: 360, 
-          duration: 0.6, 
-          ease: 'power2.out' 
-        });
+        const cardIcon = card.querySelector('.card-icon');
+        if (cardIcon) {
+          gsap.to(cardIcon, { 
+            rotation: 360, 
+            duration: 0.6, 
+            ease: 'power2.out' 
+          });
+        }
       });
 
       card.addEventListener('mouseleave', () => {
         gsap.to(card, { scale: 1, duration: 0.3, ease: 'power2.out' });
-        gsap.to(card.querySelector('.card-icon'), { 
-          rotation: 0, 
-          duration: 0.6, 
-          ease: 'power2.out' 
-        });
+        const cardIcon = card.querySelector('.card-icon');
+        if (cardIcon) {
+          gsap.to(cardIcon, { 
+            rotation: 0, 
+            duration: 0.6, 
+            ease: 'power2.out' 
+          });
+        }
       });
     });
   }
@@ -100,55 +138,86 @@ export class GSAPAnimations {
   // Scroll-triggered animations
   static animateOnScroll() {
     // Parallax effect for background elements
-    gsap.utils.toArray('.parallax-bg').forEach((element: any) => {
-      gsap.to(element, {
-        yPercent: -50,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: element,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true
-        }
-      });
-    });
-
-    // Text reveal animations
-    gsap.utils.toArray('.text-reveal').forEach((element: any) => {
-      const text = new SplitType(element, { types: 'lines' });
-      gsap.fromTo(text.lines, 
-        { y: 100, opacity: 0 },
-        { 
-          y: 0, 
-          opacity: 1, 
-          duration: 1, 
-          stagger: 0.1,
-          ease: 'power2.out',
+    const parallaxElements = gsap.utils.toArray('.parallax-bg');
+    if (parallaxElements.length > 0) {
+      parallaxElements.forEach((element: any) => {
+        gsap.to(element, {
+          yPercent: -50,
+          ease: 'none',
           scrollTrigger: {
             trigger: element,
-            start: 'top 80%',
-            end: 'bottom 20%',
-            toggleActions: 'play none none reverse'
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true
           }
+        });
+      });
+    }
+
+    // Text reveal animations
+    const textElements = gsap.utils.toArray('.text-reveal');
+    if (textElements.length > 0) {
+      textElements.forEach((element: any) => {
+        try {
+          const text = new SplitType(element, { types: 'lines' });
+          gsap.fromTo(text.lines, 
+            { y: 100, opacity: 0 },
+            { 
+              y: 0, 
+              opacity: 1, 
+              duration: 1, 
+              stagger: 0.1,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: element,
+                start: 'top 80%',
+                end: 'bottom 20%',
+                toggleActions: 'play none none reverse'
+              }
+            }
+          );
+        } catch (error) {
+          // Fallback if SplitType fails
+          gsap.fromTo(element, 
+            { y: 50, opacity: 0 },
+            { 
+              y: 0, 
+              opacity: 1, 
+              duration: 1, 
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: element,
+                start: 'top 80%',
+                end: 'bottom 20%',
+                toggleActions: 'play none none reverse'
+              }
+            }
+          );
         }
-      );
-    });
+      });
+    }
   }
 
   // Form input animations
   static animateFormInputs() {
-    gsap.utils.toArray('.animated-input').forEach((input: any) => {
+    const animatedInputs = gsap.utils.toArray('.animated-input');
+    if (animatedInputs.length === 0) return;
+
+    animatedInputs.forEach((input: any) => {
       input.addEventListener('focus', () => {
         gsap.to(input, { 
           scale: 1.02, 
           boxShadow: '0 0 20px rgba(59, 130, 246, 0.3)',
           duration: 0.3 
         });
-        gsap.to(input.parentElement.querySelector('.input-glow'), {
-          opacity: 1,
-          scale: 1.1,
-          duration: 0.3
-        });
+        const inputGlow = input.parentElement?.querySelector('.input-glow');
+        if (inputGlow) {
+          gsap.to(inputGlow, {
+            opacity: 1,
+            scale: 1.1,
+            duration: 0.3
+          });
+        }
       });
 
       input.addEventListener('blur', () => {
@@ -157,11 +226,14 @@ export class GSAPAnimations {
           boxShadow: '0 0 0px rgba(59, 130, 246, 0)',
           duration: 0.3 
         });
-        gsap.to(input.parentElement.querySelector('.input-glow'), {
-          opacity: 0,
-          scale: 1,
-          duration: 0.3
-        });
+        const inputGlow = input.parentElement?.querySelector('.input-glow');
+        if (inputGlow) {
+          gsap.to(inputGlow, {
+            opacity: 0,
+            scale: 1,
+            duration: 0.3
+          });
+        }
       });
     });
   }

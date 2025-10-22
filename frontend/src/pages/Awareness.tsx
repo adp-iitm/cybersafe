@@ -1,30 +1,30 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import { Lightbulb, Shield, BookOpen, ExternalLink, DollarSign, Mail, AlertTriangle, Eye, Lock, Smartphone } from 'lucide-react';
-import { GSAPAnimations } from '../utils/gsapAnimations';
+import { Lightbulb, Shield, BookOpen, ExternalLink, DollarSign, Mail, AlertTriangle, Eye, Lock, Smartphone, XCircle, CheckCircle } from 'lucide-react';
+// import { GSAPAnimations } from '../utils/gsapAnimations'; // Not needed for Awareness page
 
 const scamTypes = [
   {
     title: 'Phishing Scams',
     description: 'Deceptive emails or websites designed to steal your personal information.',
     icon: Lightbulb,
-    color: 'text-primary',
+    color: 'text-blue-500',
     details: 'Often impersonate legitimate organizations. Look for suspicious links, generic greetings, and urgent requests.',
   },
   {
     title: 'Tech Support Scams',
     description: 'Fraudsters pretending to be tech support to gain remote access or money.',
     icon: Shield,
-    color: 'text-secondary',
+    color: 'text-green-500',
     details: 'They might call you unexpectedly or display pop-up warnings. Never give remote access to unsolicited callers.',
   },
   {
     title: 'Investment Fraud',
     description: 'Promises of high returns with little to no risk, often involving fake cryptocurrencies or schemes.',
     icon: DollarSign,
-    color: 'text-accent',
+    color: 'text-yellow-500',
     details: 'Be wary of unsolicited investment opportunities. If it sounds too good to be true, it probably is.',
   },
   {
@@ -130,19 +130,13 @@ const itemVariants = {
 };
 
 const Awareness: React.FC = () => {
-  const awarenessRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    GSAPAnimations.init();
-  }, []);
-
   return (
-    <div ref={awarenessRef} className="py-8 page-content">
+    <div className="py-8 page-content">
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-4xl font-display font-bold text-center text-text mb-12 bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary text-reveal"
+        className="text-4xl font-bold text-center text-gray-800 mb-12 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 text-reveal"
       >
         Fraud & Phishing Awareness
       </motion.h1>
@@ -156,7 +150,7 @@ const Awareness: React.FC = () => {
       >
         <motion.h2
           variants={itemVariants}
-          className="text-3xl font-display font-semibold text-text mb-8 text-center"
+          className="text-3xl font-display font-semibold text-gray-800 mb-8 text-center"
         >
           Common Scam Types
         </motion.h2>
@@ -175,13 +169,13 @@ const Awareness: React.FC = () => {
                 <div className={`p-4 rounded-full bg-opacity-10 ${scam.color.replace('text-', 'bg-')} mb-4`}>
                   <scam.icon size={40} className={scam.color} />
                 </div>
-                <h3 className="text-xl font-semibold text-text mb-2">{scam.title}</h3>
-                <p className="text-text-light text-sm mb-4">{scam.description}</p>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">{scam.title}</h3>
+                <p className="text-gray-800-light text-sm mb-4">{scam.description}</p>
                 <details className="text-left w-full">
-                  <summary className="text-primary cursor-pointer text-sm font-medium hover:underline">
+                  <summary className="text-blue-500 cursor-pointer text-sm font-medium hover:underline">
                     Learn More
                   </summary>
-                  <p className="text-text-light text-xs mt-2">{scam.details}</p>
+                  <p className="text-gray-800-light text-xs mt-2">{scam.details}</p>
                 </details>
               </Card>
             </motion.div>
@@ -198,7 +192,7 @@ const Awareness: React.FC = () => {
       >
         <motion.h2
           variants={itemVariants}
-          className="text-3xl font-display font-semibold text-text mb-8 text-center"
+          className="text-3xl font-display font-semibold text-gray-800 mb-8 text-center"
         >
           Guides & Resources
         </motion.h2>
@@ -215,9 +209,9 @@ const Awareness: React.FC = () => {
             >
               <Card className="flex flex-col justify-between p-6">
                 <div>
-                  <BookOpen size={32} className="text-primary mb-4" />
-                  <h3 className="text-xl font-semibold text-text mb-2">{guide.title}</h3>
-                  <p className="text-text-light text-sm mb-4">{guide.description}</p>
+                  <BookOpen size={32} className="text-blue-500 mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">{guide.title}</h3>
+                  <p className="text-gray-800-light text-sm mb-4">{guide.description}</p>
                 </div>
                 <Button variant="ghost" className="self-start flex items-center space-x-2">
                   <span>Read Guide</span>
@@ -236,7 +230,7 @@ const Awareness: React.FC = () => {
         transition={{ delay: 0.6, duration: 0.8 }}
         className="mb-16"
       >
-        <h2 className="text-3xl font-display font-semibold text-text mb-8 text-center text-reveal">Fake vs. Real Examples</h2>
+        <h2 className="text-3xl font-display font-semibold text-gray-800 mb-8 text-center text-reveal">Fake vs. Real Examples</h2>
         <div className="space-y-8">
           {fakeVsRealExamples.map((example, index) => (
             <motion.div
@@ -351,7 +345,7 @@ const Awareness: React.FC = () => {
         transition={{ delay: 1, duration: 0.8 }}
         className="mb-16"
       >
-        <h2 className="text-3xl font-display font-semibold text-text mb-8 text-center text-reveal">Stay Safe Online</h2>
+        <h2 className="text-3xl font-display font-semibold text-gray-800 mb-8 text-center text-reveal">Stay Safe Online</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {safetySteps.map((step, index) => (
             <motion.div
@@ -366,7 +360,7 @@ const Awareness: React.FC = () => {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ delay: 1.4 + index * 0.1, duration: 0.5, ease: 'back.out(1.7)' }}
+                  transition={{ delay: 1.4 + index * 0.1, duration: 0.5, ease: 'easeOut' }}
                   className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-opacity-10 ${step.color.replace('text-', 'bg-')} mb-4`}
                 >
                   <step.icon size={32} className={step.color} />
@@ -374,8 +368,8 @@ const Awareness: React.FC = () => {
                 <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full ${step.color.replace('text-', 'bg-')} text-white font-bold text-sm mb-3`}>
                   {step.step}
                 </div>
-                <h3 className="text-lg font-semibold text-text mb-2">{step.title}</h3>
-                <p className="text-text-light text-sm">{step.description}</p>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">{step.title}</h3>
+                <p className="text-gray-800-light text-sm">{step.description}</p>
               </Card>
             </motion.div>
           ))}
@@ -389,8 +383,8 @@ const Awareness: React.FC = () => {
         transition={{ delay: 0.8, duration: 0.8 }}
         className="text-center"
       >
-        <h2 className="text-3xl font-display font-semibold text-text mb-4">Need Immediate Help?</h2>
-        <p className="text-lg text-text-light mb-8">
+        <h2 className="text-3xl font-display font-semibold text-gray-800 mb-4">Need Immediate Help?</h2>
+        <p className="text-lg text-gray-800-light mb-8">
           If you suspect you've encountered fraud or phishing, use our check tools or report it.
         </p>
         <motion.div

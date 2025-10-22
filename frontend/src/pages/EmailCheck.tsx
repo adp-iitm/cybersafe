@@ -26,6 +26,8 @@ const EmailCheck: React.FC = () => {
       const response = await apiService.checkEmail(emailText);
       console.log('API Response:', response);
       setPredictionResult(response);
+      // Clear the form after successful submission
+      setEmailText('');
     } catch (err) {
       console.error('API Error:', err);
       setError('Failed to connect to the API. Please try again.');
