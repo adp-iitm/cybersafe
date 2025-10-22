@@ -1,0 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-background: #F8FAFC; /* Light Grayish Blue */
+  --color-surface: #FFFFFF;    /* White */
+  --color-surface-light: #F0F4F8; /* Lighter surface for contrast */
+  --color-text: #1A202C;      /* Dark Slate Gray */
+  --color-text-light: #4A5568; /* Grayish Blue */
+  --color-primary: #4F46E5;   /* Indigo */
+  --color-primary-dark: #4338CA; /* Darker Indigo */
+  --color-primary-light: #6366F1; /* Lighter Indigo */
+  --color-secondary: #EC4899; /* Pink */
+  --color-secondary-dark: #DB2777; /* Darker Pink */
+  --color-accent: #06B6D4;    /* Cyan */
+  --color-accent-dark: #0891B2; /* Darker Cyan */
+  --color-border: #E2E8F0;    /* Light Gray */
+}
+
+/* Dark Mode (Optional, if implemented later) */
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #1A202C;
+    --color-surface: #2D3748;
+    --color-surface-light: #4A5568;
+    --color-text: #E2E8F0;
+    --color-text-light: #A0AEC0;
+    --color-primary: #6366F1;
+    --color-primary-dark: #4F46E5;
+    --color-primary-light: #818CF8;
+    --color-secondary: #F472B6;
+    --color-secondary-dark: #EC4899;
+    --color-accent: #22D3EE;
+    --color-accent-dark: #06B6D4;
+    --color-border: #4A5568;
+  }
+} */
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+  color: var(--color-text);
+}
+
+/* Custom scrollbar for a cleaner look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-light);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-light);
+}

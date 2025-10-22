@@ -1,0 +1,28 @@
+# FastAPI and Uvicorn for the backend API
+fastapi==0.103.2
+uvicorn==0.23.2
+pydantic==2.1.1
+
+# Machine Learning Dependencies for Fraud & Phishing Detection (from ml_models/requirements-ml.txt)
+# IMPORTANT: These dependencies CANNOT be installed in WebContainer as 'pip' is not available.
+# You will need to install these in a separate Python environment to run the backend.
+numpy==1.24.3
+pandas==2.0.3
+scikit-learn==1.3.0
+xgboost==1.7.6
+lightgbm==4.0.0
+nltk==3.8.1
+requests==2.31.0
+beautifulsoup4==4.12.2
+tldextract==3.4.4
+urllib3==2.0.4
+joblib==1.3.2
+matplotlib==3.7.2
+seaborn==0.12.2
+plotly==5.15.0
+onnx==1.14.1
+onnxruntime==1.15.1
+optuna==3.3.0
+imbalanced-learn==0.11.0
+wordcloud==1.9.2
+textblob==0.17.1
