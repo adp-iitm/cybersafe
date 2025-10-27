@@ -5,6 +5,7 @@ import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { ShieldCheck, LinkIcon, Mail, DollarSign, BookOpen, BarChart2 } from 'lucide-react';
 import { GSAPAnimations } from '../utils/gsapAnimations';
+import { useAuth } from '../context/AuthContext';
 
 
 const featureCards = [
@@ -62,6 +63,7 @@ const itemVariants = {
 
 const Home: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     GSAPAnimations.init();
@@ -97,7 +99,7 @@ const Home: React.FC = () => {
           >
             <ShieldCheck size={48} className="text-blue-500" />
           </motion.div>
-          <h1 className="hero-title text-5xl md:text-6xl font-bold text-gray-800 leading-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500">
+          <h1 className=" text-5xl md:text-6xl font-bold tex leading-tight mb-4 bg-clip-text text-transparent bg-gradient-to-r  from-blue-500 via -indigo-500 to-purple-500">
             Your Shield Against Cyber Threats
           </h1>
           <p className="hero-subtitle text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -164,28 +166,30 @@ const Home: React.FC = () => {
           </motion.div>
         </motion.section>
 
-        {/* Call to Action */}
-        <motion.section
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="text-center max-w-3xl"
-        >
-          <h2 className="text-4xl font-display font-bold text-gray-800 mb-4">Ready to Protect Yourself?</h2>
-          <p className="text-lg text-gray-800-light mb-8">
-            Join thousands of users who trust CyberSafe AI to keep their digital lives secure.
-          </p>
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+        {/* Call to Action (only when logged out) */}
+        {!isLoggedIn && (
+          <motion.section
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="text-center max-w-3xl"
           >
-            <Link to="/signup">
-              <Button variant="primary" size="lg">
-                Create Free Account
-              </Button>
-            </Link>
-          </motion.div>
-        </motion.section>
+            <h2 className="text-4xl font-display font-bold text-gray-800 mb-4">Ready to Protect Yourself?</h2>
+            <p className="text-lg text-gray-800-light mb-8">
+              Join thousands of users who trust CyberSafe AI to keep their digital lives secure.
+            </p>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link to="/signup">
+                <Button variant="primary" size="lg">
+                  Create Free Account
+                </Button>
+              </Link>
+            </motion.div>
+          </motion.section>
+        )}
       </div>
     </div>
   );

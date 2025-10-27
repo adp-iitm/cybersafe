@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, CheckCircle, XCircle, Loader2, Info } from 'lucide-react';
+import { DollarSign, CheckCircle, XCircle, Loader2, Info, Hash } from 'lucide-react';
 import Input from '../components/ui/Input';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
@@ -8,8 +8,9 @@ import AnimatedResultDisplay from '../components/AnimatedResultDisplay';
 import { apiService, PredictionResponse } from '../api/apiService';
 
 const TransactionCheck: React.FC = () => {
+  const [transactionId, setTransactionId] = useState('');
   const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState('INR');
   const [country, setCountry] = useState('');
   const [predictionResult, setPredictionResult] = useState<PredictionResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,6 +25,7 @@ const TransactionCheck: React.FC = () => {
     setError(null);
 
     const transaction_data = {
+      transaction_id: transactionId || `TX-${Date.now()}`,
       amount: parseFloat(amount),
       currency,
       country,
@@ -38,6 +40,7 @@ const TransactionCheck: React.FC = () => {
       console.log('API Response:', response);
       setPredictionResult(response);
       // Clear the form after successful submission
+      setTransactionId('');
       setAmount('');
       setCountry('');
     } catch (err) {
@@ -87,6 +90,20 @@ const TransactionCheck: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
+            <label htmlFor="transactionId" className="block text-sm font-medium text-text-light mb-1">
+              Transaction ID
+            </label>
+            <Input
+              id="transactionId"
+              type="text"
+              value={transactionId}
+              onChange={(e) => setTransactionId(e.target.value)}
+              placeholder="e.g., TXN-12345"
+              required
+              icon={<Hash size={20} className="text-text-light" />}
+            />
+          </div>
+          <div>
             <label htmlFor="amount" className="block text-sm font-medium text-text-light mb-1">
               Amount
             </label>
@@ -98,8 +115,7 @@ const TransactionCheck: React.FC = () => {
               placeholder="e.g., 150.75"
               required
               step="0.01"
-              className="pl-10"
-              icon={<DollarSign size={20} className="text-text-light absolute left-3 top-1/2 -translate-y-1/2" />}
+              icon={<span className="text-text-light font-medium">₹</span>}
             />
           </div>
           <div>
@@ -111,10 +127,9 @@ const TransactionCheck: React.FC = () => {
               type="text"
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
-              placeholder="e.g., USD"
+              placeholder="e.g., INR"
               required
-              className="pl-10"
-              icon={<span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-light font-medium">€</span>}
+              icon={<span className="text-text-light font-medium">₹</span>}
             />
           </div>
           <div>
@@ -126,10 +141,9 @@ const TransactionCheck: React.FC = () => {
               type="text"
               value={country}
               onChange={(e) => setCountry(e.target.value)}
-              placeholder="e.g., USA"
+              placeholder="e.g., India"
               required
-              className="pl-10"
-              icon={<Info size={20} className="text-text-light absolute left-3 top-1/2 -translate-y-1/2" />}
+              icon={<Info size={20} className="text-text-light" />}
             />
           </div>
           <Button type="submit" variant="accent" size="lg" className="w-full" disabled={loading}>

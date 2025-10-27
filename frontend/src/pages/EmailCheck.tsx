@@ -85,8 +85,7 @@ const EmailCheck: React.FC = () => {
               placeholder="Paste the full email content here..."
               rows={8}
               required
-              className="pl-10"
-              icon={<Mail size={20} className="text-text-light absolute left-3 top-3" />}
+              icon={<Mail size={20} className="text-text-light" />}
             />
           </div>
           <Button type="submit" variant="secondary" size="lg" className="w-full" disabled={loading}>

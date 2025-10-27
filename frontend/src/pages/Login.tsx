@@ -8,6 +8,7 @@ import Card from '../components/ui/Card';
 import { LogIn as LogInIcon } from 'lucide-react';
 
 const Login: React.FC = () => {
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,7 +23,7 @@ const Login: React.FC = () => {
     if (username && password) {
       // In a real app, you'd send these to your backend for verification
       // For this simulation, any non-empty username/password works
-      login(username);
+      login(username, name);
       navigate('/dashboard'); // Redirect to dashboard after simulated login
     } else {
       setError('Please enter both username and password.');
@@ -50,6 +51,18 @@ const Login: React.FC = () => {
         </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-text-light mb-1">
+              Name
+            </label>
+            <Input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
+            />
+          </div>
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-text-light mb-1">
               Username
