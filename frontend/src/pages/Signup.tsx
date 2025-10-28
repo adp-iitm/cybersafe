@@ -8,6 +8,7 @@ import Card from '../components/ui/Card';
 import { UserPlus } from 'lucide-react';
 
 const Signup: React.FC = () => {
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +21,7 @@ const Signup: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    if (!username || !email || !password || !confirmPassword) {
+    if (!name || !username || !email || !password || !confirmPassword) {
       setError('All fields are required.');
       return;
     }
@@ -32,8 +33,8 @@ const Signup: React.FC = () => {
 
     // Simulate signup logic
     // In a real app, you'd send these to your backend to create a new user
-    console.log('Simulating signup for:', { username, email });
-    login(username); // Simulate auto-login after successful signup
+    console.log('Simulating signup for:', { name, username, email });
+    login(username, name); // Simulate auto-login after successful signup
     navigate('/dashboard'); // Redirect to dashboard after simulated signup
   };
 
@@ -58,6 +59,19 @@ const Signup: React.FC = () => {
         </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-text-light mb-1">
+              Name
+            </label>
+            <Input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your full name"
+              required
+            />
+          </div>
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-text-light mb-1">
               Username

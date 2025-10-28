@@ -85,8 +85,7 @@ const URLCheck: React.FC = () => {
               onChange={(e) => setUrl(e.target.value)}
               placeholder="e.g., https://malicious-site.com/login"
               required
-              className="pl-10"
-              icon={<LinkIcon size={20} className="text-text-light absolute left-3 top-1/2 -translate-y-1/2" />}
+              icon={<LinkIcon size={20} className="text-text-light" />}
             />
           </div>
           <Button type="submit" variant="primary" size="lg" className="w-full" disabled={loading}>

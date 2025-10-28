@@ -40,17 +40,17 @@ const guides = [
   {
     title: 'How to Spot a Phishing Email',
     description: 'Learn the tell-tale signs of a fraudulent email and protect your inbox.',
-    link: '#', // Placeholder for actual guide link
+    link: 'https://www.infosecawareness.in/phishing', // Govt. of India (MeitY) - ISEA
   },
   {
     title: 'Securing Your Online Transactions',
     description: 'Best practices for safe online shopping and financial activities.',
-    link: '#', // Placeholder for actual guide link
+    link: 'https://www.infosecawareness.in/banking-financials', // Govt. of India (MeitY) - ISEA
   },
   {
     title: 'Protecting Your Personal Data',
     description: 'Tips and tricks to keep your sensitive information safe from cybercriminals.',
-    link: '#', // Placeholder for actual guide link
+    link: 'https://www.infosecawareness.in/privacy', // Govt. of India (MeitY) - ISEA
   },
 ];
 
@@ -213,10 +213,12 @@ const Awareness: React.FC = () => {
                   <h3 className="text-xl font-semibold text-gray-800 mb-2">{guide.title}</h3>
                   <p className="text-gray-800-light text-sm mb-4">{guide.description}</p>
                 </div>
-                <Button variant="ghost" className="self-start flex items-center space-x-2">
-                  <span>Read Guide</span>
-                  <ExternalLink size={16} />
-                </Button>
+                <a href={guide.link} target="_blank" rel="noopener noreferrer" className="self-start">
+                  <Button variant="ghost" className="flex items-center space-x-2">
+                    <span>Read Guide</span>
+                    <ExternalLink size={16} />
+                  </Button>
+                </a>
               </Card>
             </motion.div>
           ))}
@@ -391,7 +393,11 @@ const Awareness: React.FC = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Button variant="primary" size="lg">Report Fraud</Button>
+          <a href="https://cybercrime.gov.in/" target="_blank" rel="noopener noreferrer">
+            <Button variant="primary" size="lg" className="inline-flex items-center">
+              Report Fraud
+            </Button>
+          </a>
         </motion.div>
       </motion.section>
     </div>

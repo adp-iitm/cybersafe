@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './Layout';
 import Home from './pages/Home';
 import URLCheck from './pages/URLCheck';
@@ -11,6 +11,7 @@ import Login from './pages/Login'; // New
 import Signup from './pages/Signup'; // New
 import ProtectedRoute from './components/ProtectedRoute'; // New
 import { AuthProvider } from './context/AuthContext'; // New
+import { useAuth } from './context/AuthContext';
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
       <AuthProvider> {/* Wrap the entire app with AuthProvider */}
         <Layout>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<RootRedirect />} />
+            <Route path="/home" element={<HomeGate />} />
             <Route path="/url-check" element={<URLCheck />} />
             <Route path="/email-check" element={<EmailCheck />} />
             <Route path="/transaction-check" element={<TransactionCheck />} />
@@ -48,6 +50,16 @@ function App() {
       </AuthProvider>
     </Router>
   );
+}
+
+function RootRedirect() {
+  const { isLoggedIn } = useAuth();
+  return <Navigate to={isLoggedIn ? '/dashboard' : '/login'} replace />;
+}
+
+function HomeGate() {
+  const { isLoggedIn } = useAuth();
+  return isLoggedIn ? <Navigate to="/dashboard" replace /> : <Home />;
 }
 
 export default App;

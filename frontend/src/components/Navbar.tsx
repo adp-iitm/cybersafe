@@ -6,19 +6,19 @@ import Button from './ui/Button';
 import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const navLinks = [
-  { name: 'Home', path: '/', icon: ShieldCheck },
+  { name: 'Dashboard', path: '/dashboard', icon: BarChart2, protected: true },
+  { name: 'Home', path: '/home', icon: ShieldCheck, guestOnly: true },
   { name: 'URL Check', path: '/url-check', icon: LinkIcon },
   { name: 'Email Check', path: '/email-check', icon: Mail },
   { name: 'Transaction Check', path: '/transaction-check', icon: DollarSign },
   { name: 'Awareness', path: '/awareness', icon: BookOpen },
-  { name: 'Dashboard', path: '/dashboard', icon: BarChart2, protected: true },
   { name: 'Notifications', path: '/notifications', icon: Bell, protected: true },
 ];
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const { isLoggedIn, logout, username } = useAuth(); // Use auth context
+  const { isLoggedIn, logout, displayName } = useAuth(); // Use auth context
 
   const handleLogout = () => {
     logout();
@@ -47,8 +47,8 @@ const Navbar: React.FC = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
           {navLinks.map((link) => (
-            // Only show protected links if logged in
-            (!link.protected || isLoggedIn) && (
+            // Show protected links only when logged in; hide guest-only links when logged in
+            (!link.protected || isLoggedIn) && !(link.guestOnly && isLoggedIn) && (
               <Link
                 key={link.name}
                 to={link.path}
@@ -67,22 +67,22 @@ const Navbar: React.FC = () => {
             )
           ))}
           {isLoggedIn ? (
-            <div className="flex items-center space-x-2">
-              <span className="text-text-light text-sm">Hi, {username}!</span>
+            <div className="flex items-center space-x-3">
+              <span className="text-text-light text-sm">Hi, {displayName}!</span>
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 <LogOut size={18} className="mr-1" /> Logout
               </Button>
             </div>
           ) : (
             <div className="flex items-center space-x-2">
-              <Link to="/login">
-                <Button variant="ghost" size="sm">
-                  <LogIn size={18} className="mr-1" /> Login
-                </Button>
-              </Link>
               <Link to="/signup">
                 <Button variant="primary" size="sm">
-                  <UserPlus size={18} className="mr-1" /> Sign Up
+                  <UserPlus size={18} className="mr-1" /> Create Free Account
+                </Button>
+              </Link>
+              <Link to="/login">
+                <Button variant="outline" size="sm">
+                  <LogIn size={18} className="mr-1" /> Login
                 </Button>
               </Link>
             </div>
@@ -108,7 +108,7 @@ const Navbar: React.FC = () => {
         >
           <div className="flex flex-col items-center space-y-4">
             {navLinks.map((link) => (
-              (!link.protected || isLoggedIn) && (
+              (!link.protected || isLoggedIn) && !(link.guestOnly && isLoggedIn) && (
                 <Link
                   key={link.name}
                   to={link.path}
@@ -124,21 +124,21 @@ const Navbar: React.FC = () => {
             ))}
             {isLoggedIn ? (
               <>
-                <span className="text-text-light text-sm">Hi, {username}!</span>
+                <span className="text-text-light text-sm">Hi, {displayName}!</span>
                 <Button variant="outline" size="md" className="w-3/4" onClick={handleLogout}>
                   <LogOut size={20} className="mr-2" /> Logout
                 </Button>
               </>
             ) : (
               <>
-                <Link to="/login" className="w-3/4" onClick={() => setIsOpen(false)}>
-                  <Button variant="ghost" size="md" className="w-full">
-                    <LogIn size={20} className="mr-2" /> Login
-                  </Button>
-                </Link>
                 <Link to="/signup" className="w-3/4" onClick={() => setIsOpen(false)}>
                   <Button variant="primary" size="md" className="w-full">
-                    <UserPlus size={20} className="mr-2" /> Sign Up
+                    <UserPlus size={20} className="mr-2" /> Create Free Account
+                  </Button>
+                </Link>
+                <Link to="/login" className="w-3/4" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" size="md" className="w-full">
+                    <LogIn size={20} className="mr-2" /> Login
                   </Button>
                 </Link>
               </>

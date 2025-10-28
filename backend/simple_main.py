@@ -207,7 +207,7 @@ def analyze_transaction(transaction_data: Dict) -> Dict:
             "prediction": "fraudulent",
             "confidence": confidence,
             "risk_level": "high",
-            "details": f"Transaction of ${amount} shows high-risk characteristics",
+            "details": f"Transaction of ₹{amount} shows high-risk characteristics",
             "recommendations": [
                 "Review this transaction carefully",
                 "Contact your bank if suspicious",
@@ -220,7 +220,7 @@ def analyze_transaction(transaction_data: Dict) -> Dict:
             "prediction": "safe",
             "confidence": confidence,
             "risk_level": "low",
-            "details": f"Transaction of ${amount} appears to be legitimate",
+            "details": f"Transaction of ₹{amount} appears to be legitimate",
             "recommendations": [
                 "This transaction appears legitimate",
                 "Monitor your account for any unusual activity",

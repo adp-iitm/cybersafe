@@ -1,10 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import { Bell, ShieldAlert, MailWarning, DollarSign, CheckCircle } from 'lucide-react';
 
-const notifications = [
+interface NotificationItem {
+  id: number;
+  type: string;
+  icon: any;
+  message: string;
+  time: string;
+  status: 'read' | 'unread';
+  color: string;
+}
+
+const initialNotifications: NotificationItem[] = [
   {
     id: 1,
     type: 'Fraud Alert',
@@ -36,7 +46,7 @@ const notifications = [
     id: 4,
     type: 'Transaction Alert',
     icon: DollarSign,
-    message: 'Large transaction of $5,000 to an unknown vendor. Verify if authorized.',
+    message: 'Large transaction of ₹5,00,000 to an unknown vendor. Verify if authorized.',
     time: '3 hours ago',
     status: 'read',
     color: 'text-red-500',
@@ -50,7 +60,7 @@ const notifications = [
     status: 'read',
     color: 'text-primary',
   },
-].slice(0, 10); // Limit to 10 items
+];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -68,6 +78,51 @@ const itemVariants = {
 };
 
 const Notifications: React.FC = () => {
+  const [items, setItems] = useState<NotificationItem[]>([]);
+
+  // Load from localStorage once
+  useEffect(() => {
+    const saved = localStorage.getItem('notifications');
+    if (saved) {
+      try {
+        setItems(JSON.parse(saved));
+        return;
+      } catch {}
+    }
+    setItems(initialNotifications);
+  }, []);
+
+  // Persist on change
+  useEffect(() => {
+    localStorage.setItem('notifications', JSON.stringify(items));
+  }, [items]);
+
+  const markAllRead = () => {
+    setItems((prev) => prev.map((n) => ({ ...n, status: 'read' })));
+  };
+
+  const toggleRead = (id: number) => {
+    setItems((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, status: n.status === 'read' ? 'unread' : 'read' } : n))
+    );
+  };
+
+  const loadMore = () => {
+    const nextId = items.length ? Math.max(...items.map((i) => i.id)) + 1 : 1;
+    const more: NotificationItem[] = [
+      {
+        id: nextId,
+        type: 'Security Tip',
+        icon: Bell,
+        message: 'Enable two-factor authentication on your accounts for extra security.',
+        time: 'Just now',
+        status: 'unread',
+        color: 'text-primary',
+      },
+    ];
+    setItems((prev) => [...prev, ...more]);
+  };
+
   return (
     <div className="py-8">
       <motion.h1
@@ -90,13 +145,13 @@ const Notifications: React.FC = () => {
           className="flex justify-between items-center mb-8"
         >
           <h2 className="text-3xl font-display font-semibold text-text">Recent Alerts</h2>
-          <Button variant="ghost" size="sm">
+          <Button variant="ghost" size="sm" onClick={markAllRead}>
             Mark all as read
           </Button>
         </motion.div>
 
         <motion.div variants={containerVariants} className="space-y-4">
-          {notifications.map((notification) => (
+          {items.map((notification) => (
             <motion.div
               key={notification.id}
               variants={itemVariants}
@@ -112,9 +167,9 @@ const Notifications: React.FC = () => {
                   </div>
                   <p className="text-text-light text-sm mt-1">{notification.message}</p>
                 </div>
-                {notification.status === 'unread' && (
-                  <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2" title="Unread"></span>
-                )}
+                <Button variant="ghost" size="sm" onClick={() => toggleRead(notification.id)}>
+                  {notification.status === 'unread' ? 'Mark read' : 'Mark unread'}
+                </Button>
               </Card>
             </motion.div>
           ))}
@@ -126,7 +181,7 @@ const Notifications: React.FC = () => {
           transition={{ delay: 0.8, duration: 0.5 }}
           className="text-center mt-12"
         >
-          <Button variant="outline" size="md">
+          <Button variant="outline" size="md" onClick={loadMore}>
             Load More Notifications
           </Button>
         </motion.div>
