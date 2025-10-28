@@ -37,8 +37,9 @@ const EmailCheck: React.FC = () => {
   };
 
   const getResultType = (prediction: string): 'safe' | 'fraud' | 'suspicious' => {
-    if (prediction === 'fraudulent') return 'fraud';
-    if (prediction === 'safe') return 'safe';
+    const pred = prediction.toLowerCase();
+    if (pred === 'fraudulent') return 'fraud';
+    if (pred === 'safe') return 'safe';
     return 'suspicious';
   };
 

@@ -1,3 +1,4 @@
+// frontend/src/api/apiService.ts
 /**
  * API Service for Fraud Detection Platform
  * Handles all communication with the backend API
@@ -6,14 +7,22 @@
 const API_BASE_URL = 'http://localhost:8000';
 
 export interface PredictionResponse {
+  request_id: string;
   prediction: string;
   confidence: number;
+  risk_score: number;
   risk_level: string;
   details: string;
   recommendations: string[];
+  model_version: string;
+  processing_time_ms: number;
   timestamp: string;
-  risk_score?: number;
-  suspicious_factors?: string[];
+  risk_factors?: {
+    high_amount?: boolean;
+    country_mismatch?: boolean;
+    suspicious_merchant?: boolean;
+    // add more as needed
+  };
 }
 
 export interface BatchPredictionResponse {
@@ -44,7 +53,7 @@ class ApiService {
     
     const defaultHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer mock-token', // Mock token for now
+      // No auth needed (you disabled it)
     };
 
     const config: RequestInit = {
@@ -59,11 +68,11 @@ class ApiService {
       const response = await fetch(url, config);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.detail || `HTTP ${response.status}`);
       }
       
-      const data = await response.json();
-      return data;
+      return await response.json();
     } catch (error) {
       console.error(`API request failed for ${endpoint}:`, error);
       throw error;
@@ -91,11 +100,21 @@ class ApiService {
     });
   }
 
-  // Transaction Analysis
-  async checkTransaction(transactionData: Record<string, any>): Promise<PredictionResponse> {
+  // Transaction Analysis - FIXED: No wrapper
+  async checkTransaction(transactionData: {
+    amount: number;
+    currency: string;
+    merchant_name: string;
+    merchant_country: string;
+    customer_country: string;
+    device_type?: string;
+    card_type?: string;
+    is_manual_entry?: boolean;
+    transaction_type?: string;
+  }): Promise<PredictionResponse> {
     return this.makeRequest<PredictionResponse>('/api/transaction-check', {
       method: 'POST',
-      body: JSON.stringify({ transaction_data: transactionData }),
+      body: JSON.stringify(transactionData), // Direct object, no wrapper
     });
   }
 
@@ -116,7 +135,7 @@ class ApiService {
   }
 
   // Batch Transaction Analysis
-  async checkTransactionsBatch(transactions: Record<string, any>[]): Promise<BatchPredictionResponse> {
+  async checkTransactionsBatch(transactions: any[]): Promise<BatchPredictionResponse> {
     return this.makeRequest<BatchPredictionResponse>('/api/batch/transaction-check', {
       method: 'POST',
       body: JSON.stringify({ transactions }),
@@ -129,7 +148,7 @@ class ApiService {
   }
 
   // Report Fraud
-  async reportFraud(reportData: Record<string, any>): Promise<any> {
+  async reportFraud(reportData: any): Promise<any> {
     return this.makeRequest('/api/report', {
       method: 'POST',
       body: JSON.stringify(reportData),
@@ -137,6 +156,6 @@ class ApiService {
   }
 }
 
-// Create and export a singleton instance
+// Singleton instance
 export const apiService = new ApiService();
 export default apiService;

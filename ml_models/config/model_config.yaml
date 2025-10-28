@@ -1,8 +1,0 @@
-url_model:
-  threshold: 0.5
-email_model:
-  threshold: 0.5
-transaction_model:
-  threshold: 0.5
-inference:
-  batch_size: 64
