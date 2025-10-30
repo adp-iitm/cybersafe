@@ -46,7 +46,6 @@ data/
 datasets/
 notebooks/
 checkpoints/
-models/
 runs/
 experiments/
 results/
